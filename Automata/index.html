@@ -72,7 +72,6 @@
             isAcceptedTag.innerText = `${res ? "Accepted" : "Not Accepted"}`
             isAcceptedTag.style.color = `${res ? "green" : "red"}`;
         } else {
-            console.error(result[0]);
             isAcceptedTag.innerText = `Invalid String ${result[0]}`
             isAcceptedTag.style.color = "red";
         }
