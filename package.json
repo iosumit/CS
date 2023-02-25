@@ -1,0 +1,12 @@
+{
+  "name": "com.cs",
+  "version": "1.0.0",
+  "description": "\"CS Subject Simulation\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sumit Kumar",
+  "license": "ISC",
+  "type": "module"
+}
