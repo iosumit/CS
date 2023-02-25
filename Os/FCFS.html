@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FCFS Scheduling Algorithm</title>
+    <style>
+        table {
+            margin: 10px;
+        }
+
+        span {
+            font-size: 10px;
+            color: red;
+        }
+
+        .gantt-item {
+            min-width: 50px;
+            padding-bottom: 0;
+            padding-inline: 1px;
+        }
+
+        .gantt-item-time {
+            display: flex;
+            flex-direction: row;
+            justify-content: end;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding-inline: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <center id="header">
+        <h1>FCFS Scheduling Algorithm</h1>
+    </center>
+    <div id="main">
+
+    </div>
+</body>
+
+<script src="lib/Process.js"></script>
+<script>
+    //------Constants-------//
+    const degreeOfMultiProgramming = 10;
+    let processPoolQueue = [];
+    let MAX_AT = 10;
+    let MAX_BT = 10;
+    let main = document.getElementById("main");
+    let tableCal = document.createElement("table");
+    let ganttChart = document.createElement("table");
+    let tableinit = document.createElement("table");
+    let header = document.getElementById("header");
+
+    function initialUi() {
+        main.innerHTML = '';
+        main.appendChild(tableinit);
+        main.appendChild(ganttChart);
+        main.appendChild(tableCal);
+
+        let hdomp3 = document.createElement("h3");
+        hdomp3.innerText = "Degree Of Multiprograming - " + degreeOfMultiProgramming;
+        header.appendChild(hdomp3);
+        let hmat = document.createElement("h3");
+        hmat.innerText = "Max Arrival Time - " + MAX_AT;
+        header.appendChild(hmat);
+        let mbt = document.createElement("h3");
+        mbt.innerText = "Max Brust Time - " + MAX_BT;
+        header.appendChild(mbt);
+    }
+
+    //------Constants-------//
+    function Os() {
+        // Create Random Process
+        initialUi();
+
+        let pl = makeRandomProcess(Math.floor((Math.random() * degreeOfMultiProgramming) + 1)) // Create 1 - 10 
+        makeTable(pl, tableinit, false);
+
+        // FCFS
+        pl.sort((a, b) => a.AT == b.AT ? a.PID - b.PID : a.AT - b.AT);
+
+        CPU(pl);
+    }
+    function CPU(pl) {
+        let ms = -1;
+        let cpu = setInterval(function () {
+            //console.log(ms, processPoolQueue.length, pl[0]);
+            if (pl.length == 0) {
+                clearInterval(cpu);
+            }
+            else if (pl.length > 0 && pl[0].AT <= ms) {
+                console.log("pUHS");
+                ms += pl[0].BT;
+                pl[0].CT = ms;  // Calculate CT
+                pl[0].TAT = pl[0].CT - pl[0].AT; // Calculate TAT
+                pl[0].WT = pl[0].TAT - pl[0].BT;  // Calculate WT
+                processPoolQueue.push(pl.shift());
+                makeGanttChart(processPoolQueue, ganttChart, ms);
+
+                makeTable(processPoolQueue, tableCal, true);
+            } else {
+                ms++;
+                makeGanttChart(processPoolQueue, ganttChart, ms);
+            }
+
+
+
+        }, 500);
+    }
+    Os();
+
+    function makeGanttChart(processlist, ganttChart, to) {
+        let tr = document.createElement("div");
+
+        tr.appendChild(makeGanttItem({ PID: "START", AT: 0, BT: 0 }, 0));
+        let i = 0;
+        for (let mls = 0; mls < to;) {
+            let process;
+
+            if (i < processlist.length && processlist[i].AT <= mls) {
+                let o = processlist[i];
+                mls += o.BT;
+                process = makeGanttItem(o, mls);
+                i++;
+            } else {
+                // Idle
+                mls++;
+                process = makeGanttItem(null, mls);
+                process.style.width = 100;
+                process.style.backgroundColor = "yellow";
+            }
+            tr.appendChild(process);
+        }
+        // processlist.shift();
+        ganttChart.innerHTML = '';
+        ganttChart.appendChild(tr);
+    }
+
+    function makeGanttItem(o, ms) {
+        let process = document.createElement("td");
+        process.className = "gantt-item";
+
+        let div1 = document.createElement("div");
+        div1.className = "gantt-item-pid";
+        if (o) {
+            div1.innerText = "P" + o.PID;
+        } else {
+            div1.innerText = "-";
+        }
+        process.appendChild(div1);
+        let div2 = document.createElement("div");
+        div2.className = "gantt-item-time";
+        let es = document.createElement("span");
+        es.innerText = ms;
+        div2.appendChild(es);
+        process.appendChild(div2);
+        return process;
+    }
+
+    function makeRandomProcess(noOfProcess) {
+        let processlist = [];
+        for (let i = 1; i < noOfProcess; i++) {
+            let AT = Math.floor((Math.random() * MAX_AT) + 1);
+            let BT = Math.floor((Math.random() * MAX_BT) + 1);
+            let PID = i;
+            processlist.push({ PID, AT, BT, CT: "-", TAT: "-", WT: "-" });
+        }
+        return processlist;
+    }
+
+    function makeTable(processlist, table, isCalculated = true) {
+        // Creating table for processlist
+        table.innerHTML = '';
+        {
+            let tr = document.createElement("tr");
+            let thpid = document.createElement("th");
+            thpid.innerText = "PID";
+            tr.appendChild(thpid);
+            let that = document.createElement("th");
+            that.innerText = "Arriving time";
+            tr.appendChild(that);
+            let thbt = document.createElement("th");
+            thbt.innerText = "Burst time";
+            tr.appendChild(thbt);
+            if (isCalculated) {
+                let thct = document.createElement("th");
+                thct.innerText = "Completion time";
+                tr.appendChild(thct);
+                let thtat = document.createElement("th");
+                thtat.innerText = "Turn Around time";
+                tr.appendChild(thtat);
+                let thwt = document.createElement("th");
+                thwt.innerText = "Turn Around time";
+                tr.appendChild(thwt);
+            }
+            table.appendChild(tr);
+        }
+
+        for (let i = 0; i < processlist.length; i++) {
+            let tr = document.createElement("tr");
+            let pidtd = document.createElement("td");
+            pidtd.innerText = processlist[i].PID;
+            tr.appendChild(pidtd);
+            let tdat = document.createElement("td");
+            tdat.innerText = processlist[i].AT;
+            tr.appendChild(tdat);
+            let tdbt = document.createElement("td");
+            tdbt.innerText = processlist[i].BT;
+            tr.appendChild(tdbt);
+            if (isCalculated) {
+                let tdct = document.createElement("td");
+                tdct.innerText = processlist[i].CT;
+                tr.appendChild(tdct);
+                let tdtat = document.createElement("td");
+                tdtat.innerText = processlist[i].TAT;
+                tr.appendChild(tdtat);
+                let tdwt = document.createElement("td");
+                tdwt.innerText = processlist[i].WT;
+                tr.appendChild(tdwt);
+            }
+
+            table.appendChild(tr);
+        }
+    }
+</script>
+
+</html>
