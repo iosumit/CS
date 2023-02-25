@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=devicbve-width, initial-scale=1.0">
+    <title>DFA Machines</title>
+    <style>
+        button {
+            width: 200px;
+            font-size: small;
+            height: 50px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: baseline;
+            align-items: center;
+        }
+
+        input {
+            margin-bottom: 16px;
+        }
+
+        input {
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>DFA</h1>
+        <div class="inputs">
+            <label for="string-tag">Enter your <u><b>String</b></u></label>
+            <input type="text" id="string-tag">
+        </div>
+        <button onclick="runMachine(DFA.even_length_string)">W ∈ {a,b}*, Even Length String</button>
+        <p id="is-accepted"></p>
+    </div>
+
+</body>
+<script src="state.js"></script>
+<script src="dfa.js"></script>
+<script>
+    class DFA {
+        static even_length_string = "even_length_string";
+        static odd_length_string = "odd_length_string";
+    }
+
+    let machine;
+    let stringTag;
+    let isAcceptedTag;
+
+    function runMachine(e) {
+        stringTag = document.getElementById("string-tag");
+        isAcceptedTag = document.getElementById("is-accepted");
+        let pattern = /[^a-b]/;
+        let result = stringTag.value.match(pattern);
+        if (result == null) {
+            switch (e) {
+                case DFA.even_length_string:
+                    machine = dfaEvenLengthMachine();
+                    break;
+                default:
+                    break;
+            }
+            let res = validate(machine, 0, stringTag.value);
+            isAcceptedTag.innerText = `${res ? "Accepted" : "Not Accepted"}`
+            isAcceptedTag.style.color = `${res ? "green" : "red"}`;
+        } else {
+            console.error(result[0]);
+            isAcceptedTag.innerText = `Invalid String ${result[0]}`
+            isAcceptedTag.style.color = "red";
+        }
+    }
+
+</script>
+
+</html>

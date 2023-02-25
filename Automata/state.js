@@ -1,4 +1,4 @@
-export class DState {
+class DState {
     constructor(label, inputs, { start = false, final = false }) {
         this.label = label;
         this.transition = {};
@@ -9,4 +9,5 @@ export class DState {
         }
     }
 }
-export const EPSILON = null;
+const EPSILON = null;
+const a = 'a', b = 'b', c = 'c', d = 'd';
