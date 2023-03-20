@@ -33,7 +33,7 @@ function InsertionSort(nums) {
         Double linked list       O(n)           O(1)  => O(n) 
         
         Therefore,  Can't do be better
-             T(n) => O(n^2) & Omega(n)
+             T(n) => O(n^2) & Omega(n^2)
              S(n) => O(1) | Inplace Algorithm
     */
 
