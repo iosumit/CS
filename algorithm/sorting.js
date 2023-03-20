@@ -37,7 +37,6 @@ function InsertionSort(nums) {
              S(n) => O(1) | Inplace Algorithm
     */
 
-
     return nums;
 }
 // console.log(InsertionSort([9, 6, 5, 0, 8, 2, 7, 1, 3]));
